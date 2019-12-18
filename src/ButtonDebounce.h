@@ -8,22 +8,19 @@
 
 #include "Arduino.h"
 
-typedef std::function<void(const int)> ButtonCallback;
-
 class ButtonDebounce{
   private:
-    int _pin;
     unsigned long _delay;
     unsigned long _lastDebounceTime;
     unsigned long _lastChangeTime;
     int _lastStateBtn;
-    ButtonCallback _callBack = NULL;
     bool isTimeToUpdate();
   public:
-    ButtonDebounce(int pin, unsigned long delay);
-    void update();
+    ButtonDebounce(unsigned long delay);
+    void update(int muxValue);
     int state();
-    void setCallback(ButtonCallback);
+    int getDelay();
+    void setDelay(int delay);
 };
 
 #endif

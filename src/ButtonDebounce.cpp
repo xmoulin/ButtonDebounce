@@ -1,9 +1,7 @@
 #include "Arduino.h"
 #include "ButtonDebounce.h"
 
-ButtonDebounce::ButtonDebounce(int pin, unsigned long delay){
-  pinMode(pin, INPUT_PULLUP);
-  _pin = pin;
+ButtonDebounce::ButtonDebounce(unsigned long delay){
   _delay = delay;
   _lastDebounceTime = 0;
   _lastChangeTime = 0;
@@ -14,10 +12,16 @@ bool ButtonDebounce::isTimeToUpdate(){
   return (millis() - _lastDebounceTime) > _delay / 8;
 }
 
-void ButtonDebounce::update(){
+void ButtonDebounce::update(int muxValue){
   if(!isTimeToUpdate()) return;
   _lastDebounceTime = millis();
-  int btnState = digitalRead(_pin);
+  int btnState;
+  if (muxValue > 1000) {
+   btnState = HIGH;
+  } else {
+   btnState = LOW;
+  }
+
   if(btnState == _lastStateBtn) {
         _lastChangeTime = millis();
 	return;
@@ -30,13 +34,17 @@ void ButtonDebounce::update(){
 
   _lastStateBtn = btnState;
 
-  if(this->_callBack) this->_callBack(_lastStateBtn);
+
 }
 
 int ButtonDebounce::state(){
   return _lastStateBtn;
 }
 
-void ButtonDebounce::setCallback(ButtonCallback callback) { 
-  this->_callBack = callback;
+int ButtonDebounce::getDelay(){
+  return _delay;
+}
+
+void ButtonDebounce::setDelay(int delay){
+ _delay = delay;
 }
